@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Moodion</string>
+    <string name="choose_from_gallery">Choose From Gallery</string>
+    <string name="take_photo">Take Photo</string>
 </resources>
