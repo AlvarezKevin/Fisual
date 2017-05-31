@@ -16,6 +16,8 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    public static final String IMAGE_EXTRA = "IMG_KEY";
+    public static final String URI_EXTRA = "URI_KEY";
 
     private Button mButtonChoosePhoto;
     private Button mButtonTakePhoto;
@@ -59,7 +61,14 @@ public class MainActivity extends AppCompatActivity {
         mButtonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(imgBitmap != null) {
+                    Intent intent = new Intent(MainActivity.this, ResultsActivity.class);
+                    intent.putExtra(IMAGE_EXTRA, imgBitmap);
+                    intent.putExtra(URI_EXTRA,mImageUri);
+                    startActivity(intent);
+                }else {
+                    Toast.makeText(MainActivity.this,"Select an image first",Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

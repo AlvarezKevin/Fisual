@@ -16,6 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ResultsActivity"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/results">
+        </activity>
     </application>
 
 </manifest>
