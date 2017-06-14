@@ -26,8 +26,6 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-    public static final String IMAGE_EXTRA = "IMG_KEY";
-    public static final String URI_EXTRA = "URI_KEY";
 
     private Button mButtonChoosePhoto;
     private Button mButtonTakePhoto;
