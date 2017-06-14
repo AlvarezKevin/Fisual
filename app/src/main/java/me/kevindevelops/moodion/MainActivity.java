@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -67,7 +68,11 @@ public class MainActivity extends AppCompatActivity {
                 if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, RP_CAMERA_WRITE);
                 } else {
-                   //TODO Implement taking photo
+                    //Starts intent to capture images and gets uri from image
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    mImageUri = FileProvider.getUriForFile(MainActivity.this,"me.kevindevelops.moodion.fileProvider",getOutputImageFile());
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT,mImageUri);
+                    startActivityForResult(intent,RC_CAPTURE_IMAGE);
                 }
             }
         });
@@ -77,8 +82,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (imgBitmap != null) {
                     Intent intent = new Intent(MainActivity.this, ResultsActivity.class);
-                    intent.putExtra(IMAGE_EXTRA, imgBitmap);
-                    intent.putExtra(URI_EXTRA, mImageUri);
+                    intent.setData(mImageUri);
                     startActivity(intent);
                 } else {
                     Toast.makeText(MainActivity.this, "Select an image first", Toast.LENGTH_SHORT).show();
@@ -95,8 +99,11 @@ public class MainActivity extends AppCompatActivity {
             //Displays photo into the preview ImageView
             if (requestCode == RC_CAPTURE_IMAGE) {
                 if (data != null) {
-                    imgBitmap = (Bitmap) data.getExtras().get("data");
-                    mImageUri = data.getData();
+                    try {
+                        imgBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),mImageUri);
+                    } catch (IOException e) {
+                        Toast.makeText(this,"Could not get captured image",Toast.LENGTH_SHORT).show();
+                    }
                     mImageViewPreview.setImageBitmap(imgBitmap);
                 }
             }
@@ -114,7 +121,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    private static File getOuputImageFile() {
+
+    //Creates a directory for images to be saved
+    private static File getOutputImageFile() {
         File mediaStorage = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"Moodion");
 
         if(!mediaStorage.exists()) {
