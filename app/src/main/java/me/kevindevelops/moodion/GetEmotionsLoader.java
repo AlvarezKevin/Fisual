@@ -99,7 +99,7 @@ public class GetEmotionsLoader extends AsyncTaskLoader<List<EmotionResults>> {
             tempEmotions.setHappiness(scores.getDouble("happiness"));
             tempEmotions.setNeutral(scores.getDouble("neutral"));
             tempEmotions.setSadness(scores.getDouble("sadness"));
-            tempEmotions.setSurprise(scores.getDouble("surpise"));
+            tempEmotions.setSurprise(scores.getDouble("surprise"));
 
             list.add(tempEmotions);
         }
