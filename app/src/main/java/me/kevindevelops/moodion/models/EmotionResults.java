@@ -32,7 +32,7 @@ public class EmotionResults {
         return anger;
     }
 
-    public void setAnger(float anger) {
+    public void setAnger(double anger) {
         this.anger = anger;
     }
 
