@@ -56,7 +56,7 @@ public class ResultsActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public void onLoadFinished(Loader<List<EmotionResults>> loader, List<EmotionResults> data) {
-        mScoresTV.append("Your results\n");
+        mScoresTV.append("Your results\n\n");
         for(EmotionResults scores : data) {
             mScoresTV.append("Anger : " + scores.getAnger() + "\n");
             mScoresTV.append("Contempt : " + scores.getContempt() + "\n");
@@ -65,12 +65,12 @@ public class ResultsActivity extends AppCompatActivity implements LoaderManager.
             mScoresTV.append("Happiness : " + scores.getHappiness() + "\n");
             mScoresTV.append("Neutral : " + scores.getNeutral() + "\n");
             mScoresTV.append("Sadness : " + scores.getSadness() + "\n");
-            mScoresTV.append("Surprise : " + scores.getSurprise() + "\n");
+            mScoresTV.append("Surprise : " + scores.getSurprise() + "\n\n");
         }
     }
 
     @Override
     public void onLoaderReset(Loader<List<EmotionResults>> loader) {
-
+        mScoresTV.setText("");
     }
 }
