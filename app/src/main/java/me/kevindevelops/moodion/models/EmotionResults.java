@@ -1,5 +1,9 @@
 package me.kevindevelops.moodion.models;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * Created by Kevin on 6/14/2017.
  */
@@ -90,5 +94,30 @@ public class EmotionResults {
 
     public void setSurprise(double surprise) {
         this.surprise = surprise;
+    }
+
+    public Map.Entry<Double,String> getMaxEmotion(){
+        HashMap<Double,String> map = new HashMap<>();
+
+        map.put(getAnger(),"Anger");
+        map.put(getContempt(),"Contempt");
+        map.put(getDisgust(),"Disgust");
+        map.put(getFear(),"Fear");
+        map.put(getHappiness(),"Happiness");
+        map.put(getNeutral(),"Neutral");
+        map.put(getSadness(),"Sadness");
+        map.put(getSurprise(),"Surprise");
+
+        Iterator<Map.Entry<Double,String>> iterator = map.entrySet().iterator();
+        Map.Entry<Double,String> maxMap;
+        maxMap = (Map.Entry) iterator.next();
+        while(iterator.hasNext()) {
+            Map.Entry<Double,String> pair = iterator.next();
+            if(maxMap.getKey().compareTo(pair.getKey()) > 0 ) {
+                maxMap = pair;
+            }
+        }
+
+        return maxMap;
     }
 }
