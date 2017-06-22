@@ -15,11 +15,13 @@ import java.io.IOException;
 import java.util.List;
 
 import me.kevindevelops.moodion.models.EmotionResults;
+import me.kevindevelops.moodion.models.MoodPlaylist;
 
-public class ResultsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<EmotionResults>>{
+public class ResultsActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = ResultsActivity.class.getSimpleName();
     private static final int EMOTIONS_LOADER = 201;
+    private static final int PLAYLIST_LOADER = 202;
 
     private ImageView mPreviewIV;
     private TextView mScoresTV;
@@ -33,44 +35,64 @@ public class ResultsActivity extends AppCompatActivity implements LoaderManager.
         setContentView(R.layout.activity_results);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mPreviewIV = (ImageView)findViewById(R.id.iv_results_preview);
-        mScoresTV = (TextView)findViewById(R.id.tv_scores);
+        mPreviewIV = (ImageView) findViewById(R.id.iv_results_preview);
+        mScoresTV = (TextView) findViewById(R.id.tv_scores);
 
-        if(getIntent().getData() != null) {
+        if (getIntent().getData() != null) {
             mImageUri = getIntent().getData();
             try {
-                mImageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),mImageUri);
+                mImageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageUri);
             } catch (IOException e) {
-                Toast.makeText(this,"Could not get image",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Could not get image", Toast.LENGTH_SHORT).show();
             }
             mPreviewIV.setImageBitmap(mImageBitmap);
         }
 
-        getSupportLoaderManager().initLoader(EMOTIONS_LOADER,null,this);
+        getSupportLoaderManager().initLoader(EMOTIONS_LOADER, null, emotionLoaderListener);
+        getSupportLoaderManager().initLoader(PLAYLIST_LOADER, null, playlistLoaderListener);
     }
 
-    @Override
-    public Loader<List<EmotionResults>> onCreateLoader(int id, Bundle args) {
-        return new GetEmotionsLoader(this,mImageBitmap);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<EmotionResults>> loader, List<EmotionResults> data) {
-        mScoresTV.append("Your results\n\n");
-        for(EmotionResults scores : data) {
-            mScoresTV.append("Anger : " + scores.getAnger() + "\n");
-            mScoresTV.append("Contempt : " + scores.getContempt() + "\n");
-            mScoresTV.append("Disgust : " + scores.getDisgust() + "\n");
-            mScoresTV.append("Fear : " + scores.getFear() + "\n");
-            mScoresTV.append("Happiness : " + scores.getHappiness() + "\n");
-            mScoresTV.append("Neutral : " + scores.getNeutral() + "\n");
-            mScoresTV.append("Sadness : " + scores.getSadness() + "\n");
-            mScoresTV.append("Surprise : " + scores.getSurprise() + "\n\n");
+    private LoaderManager.LoaderCallbacks<List<EmotionResults>> emotionLoaderListener = new LoaderManager.LoaderCallbacks<List<EmotionResults>>() {
+        @Override
+        public Loader<List<EmotionResults>> onCreateLoader(int id, Bundle args) {
+            return new GetEmotionsLoader(ResultsActivity.this,mImageBitmap);
         }
-    }
 
-    @Override
-    public void onLoaderReset(Loader<List<EmotionResults>> loader) {
-        mScoresTV.setText("");
-    }
+        @Override
+        public void onLoadFinished(Loader<List<EmotionResults>> loader, List<EmotionResults> data) {
+            mScoresTV.append("Your results\n\n");
+            for (EmotionResults scores : data) {
+                mScoresTV.append("Anger : " + scores.getAnger() + "\n");
+                mScoresTV.append("Contempt : " + scores.getContempt() + "\n");
+                mScoresTV.append("Disgust : " + scores.getDisgust() + "\n");
+                mScoresTV.append("Fear : " + scores.getFear() + "\n");
+                mScoresTV.append("Happiness : " + scores.getHappiness() + "\n");
+                mScoresTV.append("Neutral : " + scores.getNeutral() + "\n");
+                mScoresTV.append("Sadness : " + scores.getSadness() + "\n");
+                mScoresTV.append("Surprise : " + scores.getSurprise() + "\n\n");
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<List<EmotionResults>> loader) {
+            mScoresTV.setText("");
+        }
+    };
+
+    private LoaderManager.LoaderCallbacks<MoodPlaylist> playlistLoaderListener = new LoaderManager.LoaderCallbacks<MoodPlaylist>() {
+        @Override
+        public Loader<MoodPlaylist> onCreateLoader(int id, Bundle args) {
+            return new GetPlaylistLoader(ResultsActivity.this);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<MoodPlaylist> loader, MoodPlaylist data) {
+
+        }
+
+        @Override
+        public void onLoaderReset(Loader<MoodPlaylist> loader) {
+
+        }
+    };
 }
