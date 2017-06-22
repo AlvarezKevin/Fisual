@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import me.kevindevelops.moodion.models.EmotionResults;
 import me.kevindevelops.moodion.models.MoodPlaylist;
@@ -29,6 +30,7 @@ public class ResultsActivity extends AppCompatActivity {
     private Bitmap mImageBitmap;
     private Uri mImageUri;
     private String ACCESS_TOKEN;
+    private Map.Entry<Double,String> mStrongestEmotion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +53,6 @@ public class ResultsActivity extends AppCompatActivity {
         }
 
         getSupportLoaderManager().initLoader(EMOTIONS_LOADER, null, emotionLoaderListener);
-        getSupportLoaderManager().initLoader(PLAYLIST_LOADER, null, playlistLoaderListener);
     }
 
     private LoaderManager.LoaderCallbacks<List<EmotionResults>> emotionLoaderListener = new LoaderManager.LoaderCallbacks<List<EmotionResults>>() {
@@ -63,6 +64,7 @@ public class ResultsActivity extends AppCompatActivity {
         @Override
         public void onLoadFinished(Loader<List<EmotionResults>> loader, List<EmotionResults> data) {
             mScoresTV.append("Your results\n\n");
+
             for (EmotionResults scores : data) {
                 mScoresTV.append("Anger : " + scores.getAnger() + "\n");
                 mScoresTV.append("Contempt : " + scores.getContempt() + "\n");
@@ -72,7 +74,18 @@ public class ResultsActivity extends AppCompatActivity {
                 mScoresTV.append("Neutral : " + scores.getNeutral() + "\n");
                 mScoresTV.append("Sadness : " + scores.getSadness() + "\n");
                 mScoresTV.append("Surprise : " + scores.getSurprise() + "\n\n");
+
+
+                Map.Entry<Double,String> temp = scores.getMaxEmotion();
+                if(mStrongestEmotion == null) {
+                    mStrongestEmotion = temp;
+                }else if(mStrongestEmotion.getKey().compareTo(temp.getKey()) < 0 ) {
+                    mStrongestEmotion = temp;
+                }
             }
+
+
+            getSupportLoaderManager().initLoader(PLAYLIST_LOADER, null, playlistLoaderListener);
         }
 
         @Override
@@ -84,12 +97,11 @@ public class ResultsActivity extends AppCompatActivity {
     private LoaderManager.LoaderCallbacks<MoodPlaylist> playlistLoaderListener = new LoaderManager.LoaderCallbacks<MoodPlaylist>() {
         @Override
         public Loader<MoodPlaylist> onCreateLoader(int id, Bundle args) {
-            return new GetPlaylistLoader(ResultsActivity.this);
+            return new GetPlaylistLoader(ResultsActivity.this,ACCESS_TOKEN,mStrongestEmotion.getValue());
         }
 
         @Override
         public void onLoadFinished(Loader<MoodPlaylist> loader, MoodPlaylist data) {
-
         }
 
         @Override
