@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String REDIRECT_URI = "moodion://callback";
     private static String ACCESS_TOKEN = null;
 
+    public static final String EXTRA_TOKEN = "TOKEN_EXTRA";
+
 
     private Uri mImageUri;
     private Bitmap imgBitmap;
@@ -57,6 +59,13 @@ public class MainActivity extends AppCompatActivity {
         mButtonTakePhoto = (Button) findViewById(R.id.button_take_pic);
         mButtonSubmit = (Button) findViewById(R.id.button_submit);
         mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
+
+
+        AuthenticationRequest.Builder builder =
+                new AuthenticationRequest.Builder(APIKEY.CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+
+        builder.setScopes(new String[]{"streaming"});
+        AuthenticationRequest request = builder.build();
 
 
         mButtonChoosePhoto.setOnClickListener(new View.OnClickListener() {
@@ -84,12 +93,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        AuthenticationRequest.Builder builder =
-                new AuthenticationRequest.Builder(APIKEY.CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
-
-        builder.setScopes(new String[]{"streaming"});
-        AuthenticationRequest request = builder.build();
-
         if (ACCESS_TOKEN == null) {
             AuthenticationClient.openLoginActivity(this, RC_LOG_IN, request);
         }
@@ -100,10 +103,11 @@ public class MainActivity extends AppCompatActivity {
                 if (imgBitmap != null && ACCESS_TOKEN != null) {
                     Intent intent = new Intent(MainActivity.this, ResultsActivity.class);
                     intent.setData(mImageUri);
+                    intent.putExtra(EXTRA_TOKEN,ACCESS_TOKEN);
                     startActivity(intent);
                 } else if (ACCESS_TOKEN == null) {
                     Toast.makeText(MainActivity.this, "You have to be logged into Spotify First", Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     Toast.makeText(MainActivity.this, "Select an image first", Toast.LENGTH_SHORT).show();
                 }
             }

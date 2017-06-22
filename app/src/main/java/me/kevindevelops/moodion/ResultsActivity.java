@@ -28,6 +28,7 @@ public class ResultsActivity extends AppCompatActivity {
 
     private Bitmap mImageBitmap;
     private Uri mImageUri;
+    private String ACCESS_TOKEN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class ResultsActivity extends AppCompatActivity {
         mPreviewIV = (ImageView) findViewById(R.id.iv_results_preview);
         mScoresTV = (TextView) findViewById(R.id.tv_scores);
 
+        ACCESS_TOKEN = getIntent().getStringExtra(MainActivity.EXTRA_TOKEN);
         if (getIntent().getData() != null) {
             mImageUri = getIntent().getData();
             try {
