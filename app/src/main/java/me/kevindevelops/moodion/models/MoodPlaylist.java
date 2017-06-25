@@ -15,13 +15,21 @@ public class MoodPlaylist {
     private String id;
     private String url;
     private String apiUrl;
-    private String tracksUrl;
     private int amountOfTracks;
     private String imageUrl;
     private List<Track> tracksList;
+    private String uri;
 
     public MoodPlaylist() {
         tracksList = new ArrayList<Track>();
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     public String getEmotion() {
@@ -70,14 +78,6 @@ public class MoodPlaylist {
 
     public void setApiUrl(String apiUrl) {
         this.apiUrl = apiUrl;
-    }
-
-    public String getTracksUrl() {
-        return tracksUrl;
-    }
-
-    public void setTracksUrl(String tracksUrl) {
-        this.tracksUrl = tracksUrl;
     }
 
     public int getAmountOfTracks() {

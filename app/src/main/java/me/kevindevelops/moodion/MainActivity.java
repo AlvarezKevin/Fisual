@@ -18,6 +18,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -35,6 +39,13 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_CAPTURE_IMAGE = 0;
     private static final int RC_SELECT_IMAGE = 1;
     private static final int RP_CAMERA_WRITE = 10;
+    private static final int RC_LOG_IN = 1000;
+
+    private static final String REDIRECT_URI = "moodion://callback";
+    private static String ACCESS_TOKEN = null;
+
+    public static final String EXTRA_TOKEN = "TOKEN_EXTRA";
+
 
     private Uri mImageUri;
     private Bitmap imgBitmap;
@@ -48,6 +59,13 @@ public class MainActivity extends AppCompatActivity {
         mButtonTakePhoto = (Button) findViewById(R.id.button_take_pic);
         mButtonSubmit = (Button) findViewById(R.id.button_submit);
         mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
+
+
+        AuthenticationRequest.Builder builder =
+                new AuthenticationRequest.Builder(APIKEY.CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+
+        builder.setScopes(new String[]{"streaming"});
+        AuthenticationRequest request = builder.build();
 
 
         mButtonChoosePhoto.setOnClickListener(new View.OnClickListener() {
@@ -68,25 +86,34 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     //Starts intent to capture images and gets uri from image
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    mImageUri = FileProvider.getUriForFile(MainActivity.this,"me.kevindevelops.moodion.fileProvider",getOutputImageFile());
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT,mImageUri);
-                    startActivityForResult(intent,RC_CAPTURE_IMAGE);
+                    mImageUri = FileProvider.getUriForFile(MainActivity.this, "me.kevindevelops.moodion.fileProvider", getOutputImageFile());
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+                    startActivityForResult(intent, RC_CAPTURE_IMAGE);
                 }
             }
         });
 
+        if (ACCESS_TOKEN == null) {
+            AuthenticationClient.openLoginActivity(this, RC_LOG_IN, request);
+        }
+
         mButtonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (imgBitmap != null) {
+                if (imgBitmap != null && ACCESS_TOKEN != null) {
                     Intent intent = new Intent(MainActivity.this, ResultsActivity.class);
                     intent.setData(mImageUri);
+                    intent.putExtra(EXTRA_TOKEN,ACCESS_TOKEN);
                     startActivity(intent);
+                } else if (ACCESS_TOKEN == null) {
+                    Toast.makeText(MainActivity.this, "You have to be logged into Spotify First", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MainActivity.this, "Select an image first", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        Log.v(LOG_TAG, "ACCESS TOKEN: " + ACCESS_TOKEN);
     }
 
     @Override
@@ -98,9 +125,9 @@ public class MainActivity extends AppCompatActivity {
             if (requestCode == RC_CAPTURE_IMAGE) {
                 if (data != null) {
                     try {
-                        imgBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),mImageUri);
+                        imgBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageUri);
                     } catch (IOException e) {
-                        Toast.makeText(this,"Could not get captured image",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Could not get captured image", Toast.LENGTH_SHORT).show();
                     }
                     mImageViewPreview.setImageBitmap(imgBitmap);
                 }
@@ -117,15 +144,37 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+            if (requestCode == RC_LOG_IN) {
+                AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
+
+                switch (response.getType()) {
+                    // Response was successful and contains auth token
+                    case TOKEN:
+                        // Handle successful response
+                        ACCESS_TOKEN = response.getAccessToken();
+                        Log.v(LOG_TAG, "TOKEN IS: " + ACCESS_TOKEN);
+                        break;
+                    // Auth flow returned an error
+                    case ERROR:
+                        // Handle error response
+                        Toast.makeText(this, "Error singing into Spotify", Toast.LENGTH_SHORT).show();
+                        break;
+
+                    // Most likely auth flow was cancelled
+                    default:
+                        // Handle other cases
+                        Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 
     //Creates a directory for images to be saved
     private static File getOutputImageFile() {
-        File mediaStorage = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"Moodion");
+        File mediaStorage = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Moodion");
 
-        if(!mediaStorage.exists()) {
-            if(!mediaStorage.mkdir()) {
+        if (!mediaStorage.exists()) {
+            if (!mediaStorage.mkdir()) {
                 return null;
             }
         }
