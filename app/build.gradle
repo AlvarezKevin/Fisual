@@ -30,4 +30,6 @@ dependencies {
     compile 'cz.msebera.android:httpclient:4.4.1.2'
     compile 'com.spotify.android:auth:1.0.0-alpha'
     compile files('libs/commons-io-2.5.jar')
+    compile 'com.android.support:cardview-v7:21.0.+'
+    compile 'com.android.support:recyclerview-v7:21.0.+'
 }
