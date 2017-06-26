@@ -10,6 +10,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.kevindevelops.moodion.adapter.EmotionsAdapter;
+import me.kevindevelops.moodion.adapter.PlaylistAdapter;
 import me.kevindevelops.moodion.models.EmotionResults;
 import me.kevindevelops.moodion.models.MoodPlaylist;
 
@@ -121,17 +123,25 @@ public class ResultsActivity extends AppCompatActivity {
 
         @Override
         public void onLoadFinished(Loader<MoodPlaylist> loader, MoodPlaylist data) {
-            Glide.with(ResultsActivity.this)
-                    .load(data.getImageUrl())
-                    .into(mPlaylistIV);
+            if(data.getImageUrl() != null) {
+                Glide.with(ResultsActivity.this)
+                        .load(data.getImageUrl())
+                        .into(mPlaylistIV);
+            }
+
             mPlaylistNameTV.setText(data.getName());
             mPlaylistOwnerTV.setText(data.getOwnerId());
             mAmountofTracksTV.setText(data.getAmountOfTracks() + " Tracks");
+
+            mPlaylistRV.setAdapter(new PlaylistAdapter(ResultsActivity.this,data));
+            ViewGroup.LayoutParams layoutParams = mPlaylistRV.getLayoutParams();
+            layoutParams.height = data.getAmountOfTracks() * 204;
+            mPlaylistRV.setLayoutParams(layoutParams);
         }
 
         @Override
         public void onLoaderReset(Loader<MoodPlaylist> loader) {
-
+            mPlaylistRV.setAdapter(null);
         }
     };
 }
