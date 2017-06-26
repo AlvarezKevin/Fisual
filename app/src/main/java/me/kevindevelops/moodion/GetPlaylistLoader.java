@@ -101,7 +101,7 @@ public class GetPlaylistLoader extends AsyncTaskLoader<MoodPlaylist> {
                 JSONObject itemJsonObject = tracksJsonArray.getJSONObject(i);
                 JSONObject tempTrackJsonObject = itemJsonObject.getJSONObject("track");
 
-                String trackImageUrl = tempTrackJsonObject.getJSONObject("album").getJSONArray("images").getJSONObject(1).getString("url");
+                String trackImageUrl = tempTrackJsonObject.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
                 String trackName = tempTrackJsonObject.getString("name");
                 String songUri = tempTrackJsonObject.getString("uri");
                 String songId = tempTrackJsonObject.getString("id");
