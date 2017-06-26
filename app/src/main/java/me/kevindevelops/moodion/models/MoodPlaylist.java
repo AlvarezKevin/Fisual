@@ -15,7 +15,6 @@ public class MoodPlaylist {
     private String id;
     private String url;
     private String apiUrl;
-    private int amountOfTracks;
     private String imageUrl;
     private List<Track> tracksList;
     private String uri;
@@ -81,11 +80,7 @@ public class MoodPlaylist {
     }
 
     public int getAmountOfTracks() {
-        return amountOfTracks;
-    }
-
-    public void setAmountOfTracks(int amountOfTracks) {
-        this.amountOfTracks = amountOfTracks;
+        return tracksList.size();
     }
 
     public String getImageUrl() {
