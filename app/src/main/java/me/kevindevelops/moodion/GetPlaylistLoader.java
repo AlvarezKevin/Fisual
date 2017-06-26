@@ -70,7 +70,7 @@ public class GetPlaylistLoader extends AsyncTaskLoader<MoodPlaylist> {
 
         try {
             JSONObject jsonObject = new JSONObject(json);
-            JSONArray jsonArray = jsonObject.getJSONArray("items");
+            JSONArray jsonArray = jsonObject.getJSONObject("playlists").getJSONArray("items");
             JSONObject resultsJsonObject = jsonArray.getJSONObject(new Random().nextInt(10));
 
             name = resultsJsonObject.getString("name");
@@ -98,9 +98,10 @@ public class GetPlaylistLoader extends AsyncTaskLoader<MoodPlaylist> {
 
             List<Track> tempTrackList = new ArrayList<>();
             for (int i = 0; i < tracksJsonArray.length(); i++) {
-                JSONObject tempTrackJsonObject = tracksJsonArray.getJSONObject(i);
+                JSONObject itemJsonObject = tracksJsonArray.getJSONObject(i);
+                JSONObject tempTrackJsonObject = itemJsonObject.getJSONObject("track");
 
-                String trackImageUrl = tempTrackJsonObject.getJSONArray("images").getJSONObject(1).getString("url");
+                String trackImageUrl = tempTrackJsonObject.getJSONObject("album").getJSONArray("images").getJSONObject(1).getString("url");
                 String trackName = tempTrackJsonObject.getString("name");
                 String songUri = tempTrackJsonObject.getString("uri");
                 String songId = tempTrackJsonObject.getString("id");
@@ -127,6 +128,7 @@ public class GetPlaylistLoader extends AsyncTaskLoader<MoodPlaylist> {
             return playlist;
         } catch (JSONException e) {
             Log.v(LOG_TAG, "Error building playlist");
+            e.printStackTrace();
         }
 
         return null;
