@@ -12,7 +12,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,6 +33,10 @@ public class ResultsActivity extends AppCompatActivity {
 
     private LinearLayout mTopLinearLayout;
     private ImageView mStrongestEmotionIV;
+    private ImageView mPlaylistIV;
+    private TextView mPlaylistNameTV;
+    private TextView mPlaylistOwnerTV;
+    private TextView mAmountofTracksTV;
     private RecyclerView mEmotionsRV;
     private RecyclerView mPlaylistRV;
 
@@ -46,8 +53,12 @@ public class ResultsActivity extends AppCompatActivity {
 
         mTopLinearLayout = (LinearLayout)findViewById(R.id.top_linear_layout);
         mStrongestEmotionIV = (ImageView)findViewById(R.id.iv_strongest_emotion);
+        mPlaylistIV = (ImageView) findViewById(R.id.iv_playlist_image);
         mEmotionsRV = (RecyclerView)findViewById(R.id.rv_emotions);
-        //mPlaylistRV = (RecyclerView)findViewById(R.id.rv_playlist);
+        mPlaylistRV = (RecyclerView)findViewById(R.id.rv_playlist);
+        mPlaylistNameTV = (TextView) findViewById(R.id.tv_playlist_name);
+        mPlaylistOwnerTV = (TextView) findViewById(R.id.tv_owner);
+        mAmountofTracksTV = (TextView)findViewById(R.id.tv_number_of_tracks);
 
         ACCESS_TOKEN = getIntent().getStringExtra(MainActivity.EXTRA_TOKEN);
         if (getIntent().getData() != null) {
@@ -62,6 +73,8 @@ public class ResultsActivity extends AppCompatActivity {
         mTopLinearLayout.setBackground(new BitmapDrawable(mImageBitmap));
         mEmotionsRV.setLayoutManager(new LinearLayoutManager(this));
         mEmotionsRV.setAdapter(null);
+        mPlaylistRV.setLayoutManager(new LinearLayoutManager(this));
+        mPlaylistRV.setAdapter(null);
 
         getSupportLoaderManager().initLoader(EMOTIONS_LOADER, null, emotionLoaderListener);
     }
@@ -108,6 +121,12 @@ public class ResultsActivity extends AppCompatActivity {
 
         @Override
         public void onLoadFinished(Loader<MoodPlaylist> loader, MoodPlaylist data) {
+            Glide.with(ResultsActivity.this)
+                    .load(data.getImageUrl())
+                    .into(mPlaylistIV);
+            mPlaylistNameTV.setText(data.getName());
+            mPlaylistOwnerTV.setText(data.getOwnerId());
+            mAmountofTracksTV.setText(data.getAmountOfTracks() + " Tracks");
         }
 
         @Override
