@@ -9,60 +9,55 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="4dp">
+        android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/top_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center">
 
-            <ImageView
-                android:id="@+id/iv_results_preview"
-                android:layout_width="0dp"
-                android:layout_height="200dp"
-                android:layout_weight="1" />
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
                 android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="sans-serif"
-                    android:textSize="18sp"
-                    tools:text="Strongest Emotion" />
 
                 <ImageView
                     android:id="@+id/iv_strongest_emotion"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/strongest_emotion"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:gravity="center" />
             </LinearLayout>
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_scores"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="8dp"
-            android:textSize="18sp" />
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_emotions"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="288dp"
+            android:layout_marginBottom="48dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/your_playlist" />
+            android:layout_gravity="center_horizontal"
+            android:text="@string/your_playlist"
+            android:gravity="center"
+            android:fontFamily="sans-serif-condensed"
+            android:textSize="18sp"
+            />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_playlist"
