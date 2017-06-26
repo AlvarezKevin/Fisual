@@ -113,7 +113,7 @@ public class EmotionResults {
         maxMap = (Map.Entry) iterator.next();
         while(iterator.hasNext()) {
             Map.Entry<Double,String> pair = iterator.next();
-            if(maxMap.getKey().compareTo(pair.getKey()) > 0 ) {
+            if(maxMap.getKey().compareTo(pair.getKey()) < 0 ) {
                 maxMap = pair;
             }
         }
