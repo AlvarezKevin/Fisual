@@ -10,6 +10,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -96,7 +97,7 @@ public class ResultsActivity extends AppCompatActivity {
                 Map.Entry<Double,String> temp = scores.getMaxEmotion();
                 if(mStrongestEmotion == null) {
                     mStrongestEmotion = temp;
-                }else if(mStrongestEmotion.getKey().compareTo(temp.getKey()) > 0 ) {
+                }else if(mStrongestEmotion.getKey().compareTo(temp.getKey()) < 0 ) {
                     mStrongestEmotion = temp;
                 }
             }
@@ -105,6 +106,7 @@ public class ResultsActivity extends AppCompatActivity {
                 mStrongestEmotionIV.setImageResource(Utilities.getEmotionDrawable(mStrongestEmotion.getValue()));
             }
 
+            Log.v(LOG_TAG,mStrongestEmotion.getValue());
 
             getSupportLoaderManager().initLoader(PLAYLIST_LOADER, null, playlistLoaderListener);
         }
