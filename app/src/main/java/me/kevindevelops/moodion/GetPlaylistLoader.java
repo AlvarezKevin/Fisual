@@ -71,7 +71,7 @@ public class GetPlaylistLoader extends AsyncTaskLoader<MoodPlaylist> {
         try {
             JSONObject jsonObject = new JSONObject(json);
             JSONArray jsonArray = jsonObject.getJSONObject("playlists").getJSONArray("items");
-            JSONObject resultsJsonObject = jsonArray.getJSONObject(new Random().nextInt(10));
+            JSONObject resultsJsonObject = jsonArray.getJSONObject(new Random().nextInt(jsonArray.length()));
 
             name = resultsJsonObject.getString("name");
             ownerId = resultsJsonObject.getJSONObject("owner").getString("id");
