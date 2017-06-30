@@ -18,7 +18,10 @@ public class EmotionResults {
     private double sadness;
     private double surprise;
 
+    HashMap<Double, String> map = new HashMap<>();
+
     public EmotionResults() {
+        map = new HashMap<>();
     }
 
     public EmotionResults(float anger, float contempt, float disgust, float fear, float happiness, float neutral, float sadness, float surprise) {
@@ -30,6 +33,17 @@ public class EmotionResults {
         this.neutral = neutral;
         this.sadness = sadness;
         this.surprise = surprise;
+
+        map = new HashMap<>();
+
+        map.put(getAnger(), "Anger");
+        map.put(getContempt(), "Contempt");
+        map.put(getDisgust(), "Disgust");
+        map.put(getFear(), "Fear");
+        map.put(getHappiness(), "Happiness");
+        map.put(getNeutral(), "Neutral");
+        map.put(getSadness(), "Sadness");
+        map.put(getSurprise(), "Surprise");
     }
 
     public double getAnger() {
@@ -38,6 +52,7 @@ public class EmotionResults {
 
     public void setAnger(double anger) {
         this.anger = anger;
+        map.put(getAnger(), "Anger");
     }
 
     public double getContempt() {
@@ -46,6 +61,7 @@ public class EmotionResults {
 
     public void setContempt(double contempt) {
         this.contempt = contempt;
+        map.put(getContempt(), "Contempt");
     }
 
     public double getDisgust() {
@@ -54,6 +70,7 @@ public class EmotionResults {
 
     public void setDisgust(double disgust) {
         this.disgust = disgust;
+        map.put(getDisgust(), "Disgust");
     }
 
     public double getFear() {
@@ -62,6 +79,7 @@ public class EmotionResults {
 
     public void setFear(double fear) {
         this.fear = fear;
+        map.put(getFear(), "Fear");
     }
 
     public double getHappiness() {
@@ -70,6 +88,7 @@ public class EmotionResults {
 
     public void setHappiness(double happiness) {
         this.happiness = happiness;
+        map.put(getHappiness(), "Happiness");
     }
 
     public double getNeutral() {
@@ -78,6 +97,7 @@ public class EmotionResults {
 
     public void setNeutral(double neutral) {
         this.neutral = neutral;
+        map.put(getNeutral(), "Neutral");
     }
 
     public double getSadness() {
@@ -86,6 +106,7 @@ public class EmotionResults {
 
     public void setSadness(double sadness) {
         this.sadness = sadness;
+        map.put(getSadness(), "Sadness");
     }
 
     public double getSurprise() {
@@ -94,26 +115,19 @@ public class EmotionResults {
 
     public void setSurprise(double surprise) {
         this.surprise = surprise;
+        map.put(getSurprise(), "Surprise");
     }
 
-    public Map.Entry<Double,String> getMaxEmotion(){
-        HashMap<Double,String> map = new HashMap<>();
+    public Map.Entry<Double, String> getMaxEmotion() {
 
-        map.put(getAnger(),"Anger");
-        map.put(getContempt(),"Contempt");
-        map.put(getDisgust(),"Disgust");
-        map.put(getFear(),"Fear");
-        map.put(getHappiness(),"Happiness");
-        map.put(getNeutral(),"Neutral");
-        map.put(getSadness(),"Sadness");
-        map.put(getSurprise(),"Surprise");
+        Iterator<Map.Entry<Double, String>> iterator = map.entrySet().iterator();
+        Map.Entry<Double, String> maxMap = null;
 
-        Iterator<Map.Entry<Double,String>> iterator = map.entrySet().iterator();
-        Map.Entry<Double,String> maxMap;
-        maxMap = (Map.Entry) iterator.next();
-        while(iterator.hasNext()) {
-            Map.Entry<Double,String> pair = iterator.next();
-            if(maxMap.getKey().compareTo(pair.getKey()) < 0 ) {
+        while (iterator.hasNext()) {
+            Map.Entry<Double, String> pair = iterator.next();
+            if (maxMap == null) {
+                maxMap = pair;
+            } else if (maxMap.getKey().compareTo(pair.getKey()) < 0) {
                 maxMap = pair;
             }
         }
