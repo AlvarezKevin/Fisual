@@ -51,22 +51,22 @@ public class GetPlaylistLoader extends AsyncTaskLoader<MoodPlaylist> {
             return null;
         }
 
-        MoodPlaylist playlist =  buildPlaylist(json);
+        MoodPlaylist playlist = buildPlaylist(json);
 
-        if(playlist == null) {
-            Log.v(LOG_TAG,"Playlist is null, some sort of error");
+        if (playlist == null) {
+            Log.v(LOG_TAG, "Playlist is null, some sort of error");
         }
         return playlist;
     }
 
     private MoodPlaylist buildPlaylist(String json) {
-        String name;
-        String ownerId;
-        String id;
-        String url;
-        String apiUrl;
-        String imageUrl;
-        String uri;
+        String name = null;
+        String ownerId = null;
+        String id = null;
+        String url = null;
+        String apiUrl = null;
+        String imageUrl = null;
+        String uri = null;
 
         try {
             JSONObject jsonObject = new JSONObject(json);
@@ -78,7 +78,9 @@ public class GetPlaylistLoader extends AsyncTaskLoader<MoodPlaylist> {
             id = resultsJsonObject.getString("id");
             url = resultsJsonObject.getJSONObject("external_urls").getString("spotify");
             apiUrl = resultsJsonObject.getString("href");
-            imageUrl = resultsJsonObject.getJSONArray("images").getJSONObject(0).getString("url");
+            if (resultsJsonObject.has("images")) {
+                imageUrl = resultsJsonObject.getJSONArray("images").getJSONObject(0).getString("url");
+            }
             uri = resultsJsonObject.getString("uri");
 
             MoodPlaylist playlist = new MoodPlaylist();
@@ -101,11 +103,19 @@ public class GetPlaylistLoader extends AsyncTaskLoader<MoodPlaylist> {
                 JSONObject itemJsonObject = tracksJsonArray.getJSONObject(i);
                 JSONObject tempTrackJsonObject = itemJsonObject.getJSONObject("track");
 
-                String trackImageUrl = tempTrackJsonObject.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                String trackImageUrl = null;
+                if(tempTrackJsonObject.getJSONObject("album").has("images") && tempTrackJsonObject.getJSONObject("album").getJSONArray("images").length() > 0) {
+                    trackImageUrl = tempTrackJsonObject.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                }
+
                 String trackName = tempTrackJsonObject.getString("name");
                 String songUri = tempTrackJsonObject.getString("uri");
                 String songId = tempTrackJsonObject.getString("id");
-                String songURL = tempTrackJsonObject.getJSONObject("external_urls").getString("spotify");
+
+                String songURL = null;
+                if(tempTrackJsonObject.getJSONObject("external_urls").has("spotify")) {
+                    songURL = tempTrackJsonObject.getJSONObject("external_urls").getString("spotify");
+                }
 
                 List<String> tempArtists = new ArrayList<>();
                 JSONArray artistsArray = tempTrackJsonObject.getJSONArray("artists");
