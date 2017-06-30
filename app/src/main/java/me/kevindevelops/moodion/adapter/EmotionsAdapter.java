@@ -24,6 +24,8 @@ import me.kevindevelops.moodion.models.EmotionResults;
 
 public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.EmotionsViewHolder> {
 
+    private static final String LOG_TAG = EmotionsAdapter.class.getSimpleName();
+
     private Context context;
     private List<EmotionResults> emotions;
     List<Map.Entry<String, Double>> list;
@@ -48,12 +50,13 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
 
             Iterator it = map.entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry<String, Double> emotionEntry = (Map.Entry) it.next();
+                Map.Entry<String, Double> emotionEntry = (Map.Entry<String,Double>) it.next();
 
                 int tempPos = getEmotionPos(emotionEntry.getKey());
                 if (tempPos != -1) {
                     emotionEntry.setValue(list.get(tempPos).getValue() + emotionEntry.getValue());
-                    list.set(tempPos, emotionEntry);
+                    list.add(tempPos, emotionEntry);
+                    list.remove(tempPos + 1);
                 } else {
                     list.add(emotionEntry);
                 }
