@@ -54,7 +54,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="8dp"
-            android:layout_marginTop="-32dp">
+            android:layout_marginTop="-32dp"
+            android:id="@+id/playlist_info_linear_layout">
 
             <ImageView
                 android:id="@+id/iv_playlist_image"
@@ -93,6 +94,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_playlist"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:scrollbars="none"/>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
