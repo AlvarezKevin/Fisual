@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -33,6 +34,8 @@ import me.kevindevelops.moodion.models.MoodPlaylist;
 public class ResultsActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = ResultsActivity.class.getSimpleName();
+    private static final String PLAYLIST_SAVED = "PLAYLIST";
+    private static final String EMOTIONS_SAVED = "EMOTIONS";
 
     private static final int EMOTIONS_LOADER = 201;
     private static final int PLAYLIST_LOADER = 202;
@@ -49,6 +52,8 @@ public class ResultsActivity extends AppCompatActivity {
 
     private EmotionsAdapter mEmotionsAdapter;
     private PlaylistAdapter mPlaylistAdapter;
+
+    private static Bundle mRecyclerViewStateBundle;
 
     private Bitmap mImageBitmap;
     private Uri mImageUri;
@@ -89,6 +94,30 @@ public class ResultsActivity extends AppCompatActivity {
 
         getSupportLoaderManager().initLoader(EMOTIONS_LOADER, null, emotionLoaderListener);
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        mRecyclerViewStateBundle = new Bundle();
+        mRecyclerViewStateBundle.putParcelable(EMOTIONS_SAVED, mEmotionsRV.getLayoutManager().onSaveInstanceState());
+        mRecyclerViewStateBundle.putParcelable(PLAYLIST_SAVED, mPlaylistRV.getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mRecyclerViewStateBundle != null) {
+
+            Parcelable emotionsState = mRecyclerViewStateBundle.getParcelable(EMOTIONS_SAVED);
+            Parcelable playlistState = mRecyclerViewStateBundle.getParcelable(PLAYLIST_SAVED);
+
+            mEmotionsRV.getLayoutManager().onRestoreInstanceState(emotionsState);
+            mPlaylistRV.getLayoutManager().onRestoreInstanceState(playlistState);
+        }
+    }
+
 
     private LoaderManager.LoaderCallbacks<List<EmotionResults>> emotionLoaderListener = new LoaderManager.LoaderCallbacks<List<EmotionResults>>() {
         @Override
