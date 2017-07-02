@@ -31,7 +31,7 @@ import me.kevindevelops.moodion.adapter.PlaylistAdapter;
 import me.kevindevelops.moodion.models.EmotionResults;
 import me.kevindevelops.moodion.models.MoodPlaylist;
 
-public class ResultsActivity extends AppCompatActivity {
+public class ResultsActivity extends AppCompatActivity implements PlaylistAdapter.PlaylistAdapterOnClickHandler {
 
     private static final String LOG_TAG = ResultsActivity.class.getSimpleName();
     private static final String PLAYLIST_SAVED = "PLAYLIST";
@@ -118,6 +118,11 @@ public class ResultsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void playlistOnClick(String uri) {
+        launchAppFromURI(uri);
+    }
+
 
     private LoaderManager.LoaderCallbacks<List<EmotionResults>> emotionLoaderListener = new LoaderManager.LoaderCallbacks<List<EmotionResults>>() {
         @Override
@@ -174,7 +179,7 @@ public class ResultsActivity extends AppCompatActivity {
             mAmountofTracksTV.setText(data.getAmountOfTracks() + " Tracks");
 
 
-            mPlaylistAdapter = new PlaylistAdapter(ResultsActivity.this, data);
+            mPlaylistAdapter = new PlaylistAdapter(ResultsActivity.this, data, ResultsActivity.this);
             mPlaylistRV.setAdapter(mPlaylistAdapter);
             ViewGroup.LayoutParams layoutParams = mPlaylistRV.getLayoutParams();
             layoutParams.height = data.getAmountOfTracks() * 200;
@@ -183,8 +188,7 @@ public class ResultsActivity extends AppCompatActivity {
             mPlaylistLinearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.getUri()));
-                    startActivity(intent);
+                    launchAppFromURI(data.getUri());
                 }
             });
         }
@@ -194,4 +198,9 @@ public class ResultsActivity extends AppCompatActivity {
             mPlaylistRV.setAdapter(null);
         }
     };
+
+    public void launchAppFromURI(String uri) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        startActivity(intent);
+    }
 }

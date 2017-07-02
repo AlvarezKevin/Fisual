@@ -22,14 +22,17 @@ import me.kevindevelops.moodion.models.Track;
 
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>{
 
-    Context context;
-    MoodPlaylist playlist;
-    List<Track> trackList;
+    private Context context;
+    private MoodPlaylist playlist;
+    private List<Track> trackList;
+    private PlaylistAdapterOnClickHandler mClickHandler;
 
-    public PlaylistAdapter(Context context, MoodPlaylist playlist) {
+
+    public PlaylistAdapter(Context context, MoodPlaylist playlist, PlaylistAdapterOnClickHandler mClickHandler) {
         this.context = context;
         this.playlist = playlist;
         this.trackList = playlist.getTracksList();
+        this.mClickHandler = mClickHandler;
     }
 
     @Override
@@ -49,12 +52,16 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
         }
     }
 
+    public interface PlaylistAdapterOnClickHandler {
+        void playlistOnClick(String uri);
+    }
+
     @Override
     public int getItemCount() {
         return playlist.getAmountOfTracks();
     }
 
-    public class PlaylistViewHolder extends RecyclerView.ViewHolder {
+    public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private ImageView mSongIV;
         private TextView mSongNameTV;
@@ -65,6 +72,13 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
             mSongIV = (ImageView)itemView.findViewById(R.id.playlist_song_image_list_item);
             mSongNameTV = (TextView)itemView.findViewById(R.id.playlist_song_name_list_item);
             mSongArtistTV = (TextView)itemView.findViewById(R.id.playlist_song_artist_list_item);
+            itemView.setOnClickListener(this);
+        }
+
+
+        @Override
+        public void onClick(View v) {
+            mClickHandler.playlistOnClick(trackList.get(getPosition()).getSongUri());
         }
     }
 }
