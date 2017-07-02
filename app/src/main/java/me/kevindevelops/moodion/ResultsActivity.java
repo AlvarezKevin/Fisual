@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +50,7 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
     private TextView mAmountofTracksTV;
     private RecyclerView mEmotionsRV;
     private RecyclerView mPlaylistRV;
+    private ProgressBar mProgressBar;
 
     private EmotionsAdapter mEmotionsAdapter;
     private PlaylistAdapter mPlaylistAdapter;
@@ -75,6 +77,7 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
         mPlaylistNameTV = (TextView) findViewById(R.id.tv_playlist_name);
         mPlaylistOwnerTV = (TextView) findViewById(R.id.tv_owner);
         mAmountofTracksTV = (TextView) findViewById(R.id.tv_number_of_tracks);
+        mProgressBar = (ProgressBar) findViewById(R.id.results_progress_bar);
 
         ACCESS_TOKEN = getIntent().getStringExtra(MainActivity.EXTRA_TOKEN);
         if (getIntent().getData() != null) {
@@ -91,6 +94,8 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
         mEmotionsRV.setAdapter(null);
         mPlaylistRV.setLayoutManager(new LinearLayoutManager(this));
         mPlaylistRV.setAdapter(null);
+
+        mProgressBar.setVisibility(View.VISIBLE);
 
         getSupportLoaderManager().initLoader(EMOTIONS_LOADER, null, emotionLoaderListener);
     }
@@ -185,12 +190,16 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
             layoutParams.height = data.getAmountOfTracks() * 200;
             mPlaylistRV.setLayoutParams(layoutParams);
 
+            mProgressBar.setVisibility(View.INVISIBLE);
+
             mPlaylistLinearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     launchAppFromURI(data.getUri());
                 }
             });
+
+
         }
 
         @Override
