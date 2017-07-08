@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -82,7 +83,10 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
 
     @Override
     public void onBindViewHolder(EmotionsViewHolder holder, int position) {
-        holder.mEmotionTextView.setText(Double.toString(list.get(position).getValue()));
+        DecimalFormat formatter = new DecimalFormat("#00.0000");
+
+        holder.mEmotionTextView.setText(String.format(context.getResources().getString(R.string.emotion_result),formatter.format(list.get(position).getValue() * 100)));
+
         holder.mEmotionImageView.setImageResource(Utilities.getEmotionDrawable(list.get(position).getKey()));
     }
 

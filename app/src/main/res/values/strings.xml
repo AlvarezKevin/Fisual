@@ -7,4 +7,6 @@
     <string name="results">Results</string>
     <string name="your_playlist">Your Playlist</string>
     <string name="strongest_emotion">Strongest Emotion</string>
+
+    <string name="emotion_result">%s%%</string>
 </resources>
