@@ -1,5 +1,6 @@
 package me.kevindevelops.moodion;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -17,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,7 +50,7 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
     private TextView mAmountofTracksTV;
     private RecyclerView mEmotionsRV;
     private RecyclerView mPlaylistRV;
-    private ProgressBar mProgressBar;
+    private ProgressDialog mProgressDialog;
 
     private EmotionsAdapter mEmotionsAdapter;
     private PlaylistAdapter mPlaylistAdapter;
@@ -77,7 +77,8 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
         mPlaylistNameTV = (TextView) findViewById(R.id.tv_playlist_name);
         mPlaylistOwnerTV = (TextView) findViewById(R.id.tv_owner);
         mAmountofTracksTV = (TextView) findViewById(R.id.tv_number_of_tracks);
-        mProgressBar = (ProgressBar) findViewById(R.id.results_progress_bar);
+        mProgressDialog = new ProgressDialog(ResultsActivity.this);
+
 
         ACCESS_TOKEN = getIntent().getStringExtra(MainActivity.EXTRA_TOKEN);
         if (getIntent().getData() != null) {
@@ -95,7 +96,9 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
         mPlaylistRV.setLayoutManager(new LinearLayoutManager(this));
         mPlaylistRV.setAdapter(null);
 
-        mProgressBar.setVisibility(View.VISIBLE);
+        mProgressDialog.setMessage("Loading your results and playlist...");
+        mProgressDialog.show();
+        mProgressDialog.setCancelable(false);
 
         getSupportLoaderManager().initLoader(EMOTIONS_LOADER, null, emotionLoaderListener);
     }
@@ -190,7 +193,7 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
             layoutParams.height = data.getAmountOfTracks() * 200;
             mPlaylistRV.setLayoutParams(layoutParams);
 
-            mProgressBar.setVisibility(View.INVISIBLE);
+            mProgressDialog.dismiss();
 
             mPlaylistLinearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
