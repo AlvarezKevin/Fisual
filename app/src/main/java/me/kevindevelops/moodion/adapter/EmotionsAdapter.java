@@ -37,31 +37,33 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
 
         list = new ArrayList<>();
 
-        for (EmotionResults item : emotions) {
-            HashMap<String, Double> map = new HashMap<>();
+        if (emotions != null) {
+            for (EmotionResults item : emotions) {
+                HashMap<String, Double> map = new HashMap<>();
 
-            map.put("Anger", item.getAnger());
-            map.put("Contempt", item.getContempt());
-            map.put("Disgust", item.getDisgust());
-            map.put("Fear", item.getFear());
-            map.put("Happiness", item.getHappiness());
-            map.put("Neutral", item.getNeutral());
-            map.put("Sadness", item.getSadness());
-            map.put("Surprise", item.getSurprise());
+                map.put("Anger", item.getAnger());
+                map.put("Contempt", item.getContempt());
+                map.put("Disgust", item.getDisgust());
+                map.put("Fear", item.getFear());
+                map.put("Happiness", item.getHappiness());
+                map.put("Neutral", item.getNeutral());
+                map.put("Sadness", item.getSadness());
+                map.put("Surprise", item.getSurprise());
 
-            Iterator it = map.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<String, Double> emotionEntry = (Map.Entry<String,Double>) it.next();
+                Iterator it = map.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<String, Double> emotionEntry = (Map.Entry<String, Double>) it.next();
 
-                int tempPos = getEmotionPos(emotionEntry.getKey());
-                if (tempPos != -1) {
-                    emotionEntry.setValue(list.get(tempPos).getValue() + emotionEntry.getValue());
-                    list.add(tempPos, emotionEntry);
-                    list.remove(tempPos + 1);
-                } else {
-                    list.add(emotionEntry);
+                    int tempPos = getEmotionPos(emotionEntry.getKey());
+                    if (tempPos != -1) {
+                        emotionEntry.setValue(list.get(tempPos).getValue() + emotionEntry.getValue());
+                        list.add(tempPos, emotionEntry);
+                        list.remove(tempPos + 1);
+                    } else {
+                        list.add(emotionEntry);
+                    }
+                    it.remove();
                 }
-                it.remove();
             }
         }
     }
@@ -83,9 +85,13 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
 
     @Override
     public void onBindViewHolder(EmotionsViewHolder holder, int position) {
+        if (list == null) {
+            holder.mEmotionTextView.setText(R.string.error_emotion);
+            holder.mEmotionImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_error_circle));
+        }
         DecimalFormat formatter = new DecimalFormat("#00.0000");
 
-        holder.mEmotionTextView.setText(String.format(context.getResources().getString(R.string.emotion_result),formatter.format(list.get(position).getValue() * 100)));
+        holder.mEmotionTextView.setText(String.format(context.getResources().getString(R.string.emotion_result), formatter.format(list.get(position).getValue() * 100)));
 
         holder.mEmotionImageView.setImageResource(Utilities.getEmotionDrawable(list.get(position).getKey()));
     }

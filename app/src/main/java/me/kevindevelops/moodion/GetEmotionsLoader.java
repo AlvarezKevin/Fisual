@@ -67,7 +67,7 @@ public class GetEmotionsLoader extends AsyncTaskLoader<List<EmotionResults>> {
             HttpResponse response = httpClient.execute(httpPost);
             HttpEntity httpEntity = response.getEntity();
 
-            if (httpClient != null) {
+            if (httpEntity != null) {
                 json = EntityUtils.toString(httpEntity);
                 Log.v(LOG_TAG, json);
             }

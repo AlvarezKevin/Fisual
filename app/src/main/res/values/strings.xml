@@ -9,4 +9,8 @@
     <string name="strongest_emotion">Strongest Emotion</string>
 
     <string name="emotion_result">%s%%</string>
+    <string name="error_emotion">Problem getting errors</string>
+    <string name="no_playlist">No playlist</string>
+    <string name="error">Error</string>
+    <string name="no_tracks">0 Tracks</string>
 </resources>

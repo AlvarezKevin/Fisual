@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 new AuthenticationRequest.Builder(APIKEY.CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
 
         builder.setScopes(new String[]{"streaming"});
-        AuthenticationRequest request = builder.build();
+        final AuthenticationRequest request = builder.build();
 
 
         mButtonChoosePhoto.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 } else if (ACCESS_TOKEN == null) {
                     Toast.makeText(MainActivity.this, "You have to be logged into Spotify First", Toast.LENGTH_SHORT).show();
+                    if (ACCESS_TOKEN == null) {
+                        AuthenticationClient.openLoginActivity(MainActivity.this, RC_LOG_IN, request);
+                    }
                 } else {
                     Toast.makeText(MainActivity.this, "Select an image first", Toast.LENGTH_SHORT).show();
                 }

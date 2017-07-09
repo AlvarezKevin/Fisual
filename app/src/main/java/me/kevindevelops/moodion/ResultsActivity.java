@@ -1,6 +1,7 @@
 package me.kevindevelops.moodion;
 
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -79,7 +80,6 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
         mAmountofTracksTV = (TextView) findViewById(R.id.tv_number_of_tracks);
         mProgressDialog = new ProgressDialog(ResultsActivity.this);
 
-
         ACCESS_TOKEN = getIntent().getStringExtra(MainActivity.EXTRA_TOKEN);
         if (getIntent().getData() != null) {
             mImageUri = getIntent().getData();
@@ -140,6 +140,24 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
 
         @Override
         public void onLoadFinished(Loader<List<EmotionResults>> loader, List<EmotionResults> data) {
+            if (data.isEmpty()) {
+
+                mProgressDialog.dismiss();
+
+                mPlaylistIV.setImageDrawable(getResources().getDrawable(R.drawable.ic_error_circle));
+                mPlaylistNameTV.setText(R.string.no_playlist);
+                mPlaylistOwnerTV.setText(R.string.error);
+                mAmountofTracksTV.setText(R.string.no_tracks);
+                mStrongestEmotionIV.setImageDrawable(getResources().getDrawable(R.drawable.ic_error_circle));
+
+                mEmotionsAdapter = new EmotionsAdapter(ResultsActivity.this, null);
+
+                ViewGroup.LayoutParams layoutParams = mEmotionsRV.getLayoutParams();
+                layoutParams.height = 0;
+                mEmotionsRV.setLayoutParams(layoutParams);
+                Toast.makeText(ResultsActivity.this, "Error in getting results", Toast.LENGTH_SHORT).show();
+                return;
+            }
             mEmotionsAdapter = new EmotionsAdapter(ResultsActivity.this, data);
             mEmotionsRV.setAdapter(mEmotionsAdapter);
 
@@ -153,11 +171,11 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
                 }
             }
 
+            Log.v(LOG_TAG, mStrongestEmotion.getValue());
+
             if (Utilities.getEmotionDrawable(mStrongestEmotion.getValue()) != 0) {
                 mStrongestEmotionIV.setImageResource(Utilities.getEmotionDrawable(mStrongestEmotion.getValue()));
             }
-
-            Log.v(LOG_TAG, mStrongestEmotion.getValue());
 
             getSupportLoaderManager().initLoader(PLAYLIST_LOADER, null, playlistLoaderListener);
         }
@@ -176,11 +194,22 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
 
         @Override
         public void onLoadFinished(Loader<MoodPlaylist> loader, final MoodPlaylist data) {
-            if (data.getImageUrl() != null) {
-                Glide.with(ResultsActivity.this)
-                        .load(data.getImageUrl())
-                        .into(mPlaylistIV);
+
+            if (data == null) {
+                mPlaylistIV.setImageDrawable(getResources().getDrawable(R.drawable.ic_error_circle));
+                mPlaylistNameTV.setText(R.string.no_playlist);
+                mPlaylistOwnerTV.setText(R.string.error);
+                mAmountofTracksTV.setText(R.string.no_tracks);
+                return;
             }
+
+            if (data.getImageUrl() == null) {
+                mPlaylistIV.setImageDrawable(getResources().getDrawable(R.drawable.ic_error_circle));
+            }
+
+            Glide.with(ResultsActivity.this)
+                    .load(data.getImageUrl())
+                    .into(mPlaylistIV);
 
             mPlaylistNameTV.setText(data.getName());
             mPlaylistOwnerTV.setText(data.getOwnerId());
@@ -202,7 +231,6 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
                 }
             });
 
-
         }
 
         @Override
@@ -212,7 +240,11 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
     };
 
     public void launchAppFromURI(String uri) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-        startActivity(intent);
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "Could not launch Spotify", Toast.LENGTH_SHORT).show();
+        }
     }
 }
