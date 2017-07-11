@@ -15,5 +15,9 @@ public class APIKEY {
 }
 ~~~~
 
+### Demonstration of App
+![Demonstration](https://raw.githubusercontent.com/AlvarezKevin/Moodion/master/Demonstration/MoodionGif.gif)
+
+
 ### Ideas for improvement
 If you have any ideas for improvement please let me know about them either through message or opening an issue. Thank you
