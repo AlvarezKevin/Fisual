@@ -12,7 +12,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -46,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_TOKEN = "TOKEN_EXTRA";
 
-
     private Uri mImageUri;
     private Bitmap imgBitmap;
 
@@ -60,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         mButtonSubmit = (Button) findViewById(R.id.button_submit);
         mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
 
-
+        //Checks to make sure user is logged into Spotify
         AuthenticationRequest.Builder builder =
                 new AuthenticationRequest.Builder(APIKEY.CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
 
@@ -71,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         mButtonChoosePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Launches Intent to choose an image
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
                 startActivityForResult(Intent.createChooser(intent, "Choose a picture"), RC_SELECT_IMAGE);
@@ -93,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //If user has not logged in yet it will prompt them to
         if (ACCESS_TOKEN == null) {
             AuthenticationClient.openLoginActivity(this, RC_LOG_IN, request);
         }
@@ -100,10 +100,13 @@ public class MainActivity extends AppCompatActivity {
         mButtonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Makes sure an image is chosen and user is indeed logged into Spotify
                 if (imgBitmap != null && ACCESS_TOKEN != null) {
+                    // If conditions are met user, ResultActivity is launched
+                    // Intent passes image uri, and users Acess Token
                     Intent intent = new Intent(MainActivity.this, ResultsActivity.class);
                     intent.setData(mImageUri);
-                    intent.putExtra(EXTRA_TOKEN,ACCESS_TOKEN);
+                    intent.putExtra(EXTRA_TOKEN, ACCESS_TOKEN);
                     startActivity(intent);
                 } else if (ACCESS_TOKEN == null) {
                     Toast.makeText(MainActivity.this, "You have to be logged into Spotify First", Toast.LENGTH_SHORT).show();
@@ -115,16 +118,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-        Log.v(LOG_TAG, "ACCESS TOKEN: " + ACCESS_TOKEN);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            //Gets photo in Bitmap and Uri if it was taken from camera
-            //Displays photo into the preview ImageView
+            // Gets photo in Bitmap and Uri if it was taken from camera
+            // Displays photo into the preview ImageView
             if (requestCode == RC_CAPTURE_IMAGE) {
                 if (data != null) {
                     try {
@@ -138,9 +139,9 @@ public class MainActivity extends AppCompatActivity {
             if (requestCode == RC_SELECT_IMAGE) {
                 if (data != null) {
                     try {
+                        // Get chosen image from the uri and sets image view to display it
                         imgBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
                         mImageUri = data.getData();
-                        Log.v(LOG_TAG, mImageUri.toString());
                         mImageViewPreview.setImageBitmap(imgBitmap);
                     } catch (IOException e) {
                         Toast.makeText(this, "Could not get photo", Toast.LENGTH_SHORT).show();
@@ -153,16 +154,14 @@ public class MainActivity extends AppCompatActivity {
                 switch (response.getType()) {
                     // Response was successful and contains auth token
                     case TOKEN:
-                        // Handle successful response
+                        // Handle successful response by setting the Acess Token to a global variable
                         ACCESS_TOKEN = response.getAccessToken();
-                        Log.v(LOG_TAG, "TOKEN IS: " + ACCESS_TOKEN);
                         break;
                     // Auth flow returned an error
                     case ERROR:
-                        // Handle error response
+                        // Handle error Toast
                         Toast.makeText(this, "Error singing into Spotify", Toast.LENGTH_SHORT).show();
                         break;
-
                     // Most likely auth flow was cancelled
                     default:
                         // Handle other cases
@@ -182,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        // Creates file name as 'Moodion_' + current time as a jpg
         String currentTime = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         return new File(mediaStorage.getPath() + File.separator + "Moodion_" + currentTime + ".jpg");
     }
