@@ -1,5 +1,5 @@
 # Moodion
-Android app that uses Microsoft Emotion Api and Spotify Api to fetch a playlist based on the image you take or upload.
+Android app that uses Microsoft Emotion Api and Spotify Api to fetch a playlist based on the emotions detected in the image you took or chose.
 
 
 ## How to configure on your system
