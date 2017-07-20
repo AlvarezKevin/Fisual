@@ -14,7 +14,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -42,6 +41,7 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
     private static final int EMOTIONS_LOADER = 201;
     private static final int PLAYLIST_LOADER = 202;
 
+    // Layout Views
     private LinearLayout mTopLinearLayout;
     private LinearLayout mPlaylistLinearLayout;
     private ImageView mStrongestEmotionIV;
@@ -53,11 +53,13 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
     private RecyclerView mPlaylistRV;
     private ProgressDialog mProgressDialog;
 
+    // Adapters
     private EmotionsAdapter mEmotionsAdapter;
     private PlaylistAdapter mPlaylistAdapter;
 
     private static Bundle mRecyclerViewStateBundle;
 
+    // Important information
     private Bitmap mImageBitmap;
     private Uri mImageUri;
     private String ACCESS_TOKEN;
@@ -80,6 +82,7 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
         mAmountofTracksTV = (TextView) findViewById(R.id.tv_number_of_tracks);
         mProgressDialog = new ProgressDialog(ResultsActivity.this);
 
+        // Gets info from intent such as Acess Token, and image.
         ACCESS_TOKEN = getIntent().getStringExtra(MainActivity.EXTRA_TOKEN);
         if (getIntent().getData() != null) {
             mImageUri = getIntent().getData();
@@ -100,6 +103,7 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
         mProgressDialog.show();
         mProgressDialog.setCancelable(false);
 
+        // Launches A sync task loader to fetch the emotions which will then fetch the playlist.
         getSupportLoaderManager().initLoader(EMOTIONS_LOADER, null, emotionLoaderListener);
     }
 
@@ -107,6 +111,7 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
     protected void onPause() {
         super.onPause();
 
+        // Saves the State of both the emotions and playlist so they can be restored on phone rotation
         mRecyclerViewStateBundle = new Bundle();
         mRecyclerViewStateBundle.putParcelable(EMOTIONS_SAVED, mEmotionsRV.getLayoutManager().onSaveInstanceState());
         mRecyclerViewStateBundle.putParcelable(PLAYLIST_SAVED, mPlaylistRV.getLayoutManager().onSaveInstanceState());
@@ -116,6 +121,7 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
     protected void onResume() {
         super.onResume();
 
+        // Restores state of emotions and playlist recycler view after phone rotation
         if (mRecyclerViewStateBundle != null) {
 
             Parcelable emotionsState = mRecyclerViewStateBundle.getParcelable(EMOTIONS_SAVED);
@@ -126,12 +132,13 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
         }
     }
 
+    // Function used for when a song is clicked to launch it on Spotify
     @Override
     public void playlistOnClick(String uri) {
         launchAppFromURI(uri);
     }
 
-
+    // Loader to fetch emotions and display them
     private LoaderManager.LoaderCallbacks<List<EmotionResults>> emotionLoaderListener = new LoaderManager.LoaderCallbacks<List<EmotionResults>>() {
         @Override
         public Loader<List<EmotionResults>> onCreateLoader(int id, Bundle args) {
@@ -140,8 +147,11 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
 
         @Override
         public void onLoadFinished(Loader<List<EmotionResults>> loader, List<EmotionResults> data) {
+            // Checks to make sure no errors occurred
             if (data.isEmpty()) {
-
+                // This is in case of an error
+                // Dismisses progress dialog, sets layouts to display there is no info and an error has occurred.
+                // Including the adapters of emotions recycler view
                 mProgressDialog.dismiss();
 
                 mPlaylistIV.setImageDrawable(getResources().getDrawable(R.drawable.ic_error_circle));
@@ -152,15 +162,20 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
 
                 mEmotionsAdapter = new EmotionsAdapter(ResultsActivity.this, null);
 
+                // Changes the layout height of emotions recycler view so other views come up in the layout
                 ViewGroup.LayoutParams layoutParams = mEmotionsRV.getLayoutParams();
                 layoutParams.height = 0;
                 mEmotionsRV.setLayoutParams(layoutParams);
+
                 Toast.makeText(ResultsActivity.this, "Error in getting results", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            // If no error occurred the data is passed into the adapter
             mEmotionsAdapter = new EmotionsAdapter(ResultsActivity.this, data);
             mEmotionsRV.setAdapter(mEmotionsAdapter);
 
+            // Looks for the strongest emotion result
             for (EmotionResults scores : data) {
 
                 Map.Entry<Double, String> temp = scores.getMaxEmotion();
@@ -171,12 +186,12 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
                 }
             }
 
-            Log.v(LOG_TAG, mStrongestEmotion.getValue());
-
+            // Displays strongest emotion at the top, gets appropriate icon according to emotion
             if (Utilities.getEmotionDrawable(mStrongestEmotion.getValue()) != 0) {
                 mStrongestEmotionIV.setImageResource(Utilities.getEmotionDrawable(mStrongestEmotion.getValue()));
             }
 
+            // Starts the loader to fetch playlist
             getSupportLoaderManager().initLoader(PLAYLIST_LOADER, null, playlistLoaderListener);
         }
 
@@ -195,6 +210,7 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
         @Override
         public void onLoadFinished(Loader<MoodPlaylist> loader, final MoodPlaylist data) {
 
+            // Error checking
             if (data == null) {
                 mPlaylistIV.setImageDrawable(getResources().getDrawable(R.drawable.ic_error_circle));
                 mPlaylistNameTV.setText(R.string.no_playlist);
@@ -207,6 +223,8 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
                 mPlaylistIV.setImageDrawable(getResources().getDrawable(R.drawable.ic_error_circle));
             }
 
+            // Uses the data passed to set the appropriate views the correct info
+            // Such as image, playlist name, owner id, and amount of tracks.
             Glide.with(ResultsActivity.this)
                     .load(data.getImageUrl())
                     .into(mPlaylistIV);
@@ -215,15 +233,19 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
             mPlaylistOwnerTV.setText(data.getOwnerId());
             mAmountofTracksTV.setText(data.getAmountOfTracks() + " Tracks");
 
-
+            // Passes data to playlist adapter to set up recycler view
             mPlaylistAdapter = new PlaylistAdapter(ResultsActivity.this, data, ResultsActivity.this);
             mPlaylistRV.setAdapter(mPlaylistAdapter);
+
+            // Makes sure recycler view height is enough to fit all the songs
+            // Needed to do since there are multiple recycler views in the Scroll View
             ViewGroup.LayoutParams layoutParams = mPlaylistRV.getLayoutParams();
             layoutParams.height = data.getAmountOfTracks() * 200;
             mPlaylistRV.setLayoutParams(layoutParams);
 
             mProgressDialog.dismiss();
 
+            // On Click listener for the playlist information that will launch the playlist on Spotify when clicked
             mPlaylistLinearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -239,12 +261,13 @@ public class ResultsActivity extends AppCompatActivity implements PlaylistAdapte
         }
     };
 
+    //Helper function to launch an app from the Uri, useful for launching Spotify
     public void launchAppFromURI(String uri) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "Could not launch Spotify", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Could not launch", Toast.LENGTH_SHORT).show();
         }
     }
 }
