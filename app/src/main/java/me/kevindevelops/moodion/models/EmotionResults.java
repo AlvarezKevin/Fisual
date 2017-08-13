@@ -1,5 +1,6 @@
 package me.kevindevelops.moodion.models;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,6 +18,8 @@ public class EmotionResults {
     private double neutral;
     private double sadness;
     private double surprise;
+
+    private ArrayList<Integer> facesPoints;
 
     HashMap<Double, String> map = new HashMap<>();
 
@@ -44,6 +47,8 @@ public class EmotionResults {
         map.put(getNeutral(), "Neutral");
         map.put(getSadness(), "Sadness");
         map.put(getSurprise(), "Surprise");
+
+        facesPoints = new ArrayList<>();
     }
 
     public double getAnger() {
